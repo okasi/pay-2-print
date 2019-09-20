@@ -4,8 +4,8 @@ sudo apt-get install cups printer-driver-gutenprint
 
 https://www.howtogeek.com/169679/how-to-add-a-printer-to-your-raspberry-pi-or-other-linux-computer/
 
-//to check printer config status
+Check printer config status:<br/>
 lpstat -s
 
-//to set default printer
+Set default printer:<br/>
 lpadmin -d printerName
