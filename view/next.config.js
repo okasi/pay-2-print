@@ -1,6 +1,8 @@
 const withCSS = require("@zeit/next-css");
 const withSass = require("@zeit/next-sass");
 const withOffline = require("next-offline");
+const { parsed: localEnv } = require("dotenv").config();
+const webpack = require("webpack");
 
 module.exports = withOffline(
   withCSS(
@@ -11,7 +13,8 @@ module.exports = withOffline(
           use: {
             loader: "url-loader"
           }
-        });
+        }),
+          config.plugins.push(new webpack.EnvironmentPlugin(localEnv));
 
         return config;
       }
