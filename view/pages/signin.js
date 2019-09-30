@@ -7,7 +7,6 @@ import { useRef } from "react";
 import { useMutation, useApolloClient } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import cookie from "cookie";
-import redirect from "../lib/redirect";
 
 const SIGN_IN = gql`
   mutation Signin($email: String!, $password: String!) {

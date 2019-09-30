@@ -32,7 +32,6 @@ const IndexPage = ({ loggedInUser }) => {
         <title>Pay2Print</title>
       </Head>
 
-
       {loggedInUser.user && (
         <>
           Hello {loggedInUser.user.name}!<br />
@@ -57,8 +56,11 @@ IndexPage.getInitialProps = async context => {
 
   if (!loggedInUser.user) {
     // If not signed in, send them somewhere more useful
-    redirect(context, "/signin");
+    // redirect(context, "/signin");
   }
+
+  //Remove this after demo
+  redirect(context, "/upload");
 
   return { loggedInUser };
 };
