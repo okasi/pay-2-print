@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const exec = require("child_process").exec;
 require("dotenv").config();
+const { GraphQLServer } = require("graphql-yoga");
 
 const app = express();
 app.use(cors("*"));
@@ -18,6 +19,50 @@ app.use(express.static(path.join(__dirname, "../view/out")));
 const port = process.env.PORT || "3000";
 const http = require("http").Server(app);
 http.listen(port, () => console.log(`listening on port ${port}`));
+
+const typeDefs = `
+type Query {
+  description: String
+}
+
+type File {
+  contentType: String!
+  createdAt: DateTime!
+  id: ID! @isUnique
+  name: String!
+  secret: String! @isUnique
+  size: Int!
+  updatedAt: DateTime!
+  url: String! @isUnique
+}
+
+type User {
+  createdAt: DateTime!
+  email: String @isUnique
+  id: ID! @isUnique
+  name: String!
+  password: String
+  updatedAt: DateTime!
+}
+`;
+
+const resolvers = {
+  Query: {
+    description: () => `This is the API for a simple blogging application`
+  }
+};
+
+const server = new GraphQLServer({
+  typeDefs,
+  resolvers
+});
+
+server.start(
+  (options = {
+    port: Number(port) + 1
+  }),
+  () => console.log(`graphql listening on port ${Number(port) + 1}`)
+);
 
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {

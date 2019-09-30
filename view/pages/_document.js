@@ -64,6 +64,8 @@ class MyDocument extends Document {
               </a>
             </Link>
           </center>
+          <br></br>
+          <br></br>
           <Main />
           <NextScript />
         </body>
