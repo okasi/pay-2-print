@@ -15,6 +15,7 @@
   * [Personas](#personas)
   * [User stories](#user-stories)
   * [Kanban](#kanban)
+  * [User Survey](#user-survey)
 * [Visual design](#visual-design)
   * [Wireframes](#wireframes)
   * [Logo](#logo)
@@ -175,6 +176,18 @@ Be able to see logs.<br />
 
 ## Kanban
 - [Link to Github Projects](https://github.com/okasi/pay-2-print/projects/1)
+
+## User survey
+
+Do you believe that you would print less if you paid for each print?<br /> 
+Total:<br /> 
+Yes:<br /> 
+No:<br /> 
+
+Would you be open to try out paying with cryptocurrencies if it's more seamless than traditional payment methods?<br /> 
+Total:<br /> 
+Yes:<br /> 
+No:<br /> 
 
 
 # Visual design 
