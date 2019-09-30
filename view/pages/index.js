@@ -1,68 +1,95 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import axios from "axios";
+import dynamic from "next/dynamic";
+const ReblocksPayment = dynamic(
+  () => import("reblocks").then(mod => mod.ReblocksPayment),
+  {
+    ssr: false
+  }
+);
 
-import LoginRegister from "./signin";
-import UploadAndPay from "./upload";
+export default function uploadAndPay() {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadPressed, setUploadPressed] = useState(false);
 
-import Link from "next/link";
-import Head from "next/head";
+  const types = ["image/png", "image/jpeg"];
 
-import cookie from "cookie";
-import { useApolloClient } from "@apollo/react-hooks";
-import { withApollo } from "../lib/apollo";
-import redirect from "../lib/redirect";
-import checkLoggedIn from "../lib/checkLoggedIn";
+  function onChangeHandler(event) {
+    setSelectedFile(null);
+    setUploadPressed(false);
+    let file = event.target.files[0];
 
-const IndexPage = ({ loggedInUser }) => {
-  const apolloClient = useApolloClient();
-  const signout = () => {
-    document.cookie = cookie.serialize("token", "", {
-      maxAge: -1 // Expire the cookie immediately
-    });
+    console.log("selected file: " + file.name);
 
-    // Force a reload of all the current queries now that the user is
-    // logged in, so we don't accidentally leave any state around.
-    apolloClient.cache.reset().then(() => {
-      // Redirect to a more useful page when signed out
-      // redirect({}, "/signin");
-    });
-  };
-  return (
-    <>
-      <Head>
-        <title>Pay2Print</title>
-      </Head>
+    if (types.every(type => file.type !== type)) {
+      alert(file.type + " is not a supported format.");
+      return false;
+    }
+    if (file.size > 350000) {
+      alert(file.name + " is too large.");
+      return false;
+    }
 
-      {loggedInUser.user && (
-        <>
-          Hello {loggedInUser.user.name}!<br />
-          <button onClick={signout}>Sign out</button>
-        </>
-      )}
-
-      <Link href="/login">
-        <a>
-          <button title="login"></button>
-        </a>
-      </Link>
-
-      {/* <LoginRegister /> */}
-      {/* <UploadAndPay /> */}
-    </>
-  );
-};
-
-IndexPage.getInitialProps = async context => {
-  const { loggedInUser } = await checkLoggedIn(context.apolloClient);
-
-  if (!loggedInUser.user) {
-    // If not signed in, send them somewhere more useful
-    // redirect(context, "/signin");
+    setSelectedFile(event.target.files[0]);
   }
 
-  //Remove this after demo
-  redirect(context, "/upload");
+  function onClickHandler() {
+    selectedFile ? setUploadPressed(true) : null;
+    console.log("Pay time");
+  }
 
-  return { loggedInUser };
-};
+  function onPaymentSuccess(transaction) {
+    console.log("Payment successful, transaction token: " + transaction.token);
+    const data = new FormData();
+    data.append("file", selectedFile);
+    const baseURL = process.env.REACT_APP_API_URL;
+    axios
+      .post(`${baseURL}/upload`, data, {})
+      .then(res => {
+        console.log(res.statusText);
+      })
+      .catch(err => {
+        alert(err.message);
+        console.log(err);
+      });
+  }
 
-export default withApollo(IndexPage);
+  return (
+    <div>
+      <center>
+        <div
+          style={{
+            backgroundColor: "LightSlateGrey",
+            borderRadius: "8px",
+            width: "50%",
+            padding: "5vmin"
+          }}
+        >
+          {!uploadPressed && (
+            <>
+              <input
+                type="file"
+                name="file"
+                accept="image/png, image/jpeg"
+                onChange={onChangeHandler}
+              />
+              <br></br>
+              <br></br>
+              <button type="button" onClick={onClickHandler}>
+                Upload
+              </button>
+            </>
+          )}
+
+          {uploadPressed && selectedFile && (
+            <ReblocksPayment
+              accountId="xrb_3x7uimec6g77d36xnqfweoyd5eesnu94gbw9ugfbnoyb9r5g8muxmqnwkf9s"
+              amount={161803}
+              onPaymentSuccess={onPaymentSuccess}
+            />
+          )}
+        </div>
+      </center>
+    </div>
+  );
+}
